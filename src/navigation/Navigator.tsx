@@ -10,7 +10,10 @@ const Stack = createNativeStackNavigator<RootStackParamList, 'RootStack'>();
 
 function RootStack() {
   return (
-    <Stack.Navigator initialRouteName={RouteName.SplashScreen} id="RootStack">
+    <Stack.Navigator
+      initialRouteName={RouteName.SplashScreen}
+      id="RootStack"
+      screenOptions={{ headerShown: false }}>
       <Stack.Screen name={RouteName.SplashScreen} component={SplashScreen} />
       <Stack.Screen name={RouteName.HomeScreen} component={HomeScreen} />
     </Stack.Navigator>

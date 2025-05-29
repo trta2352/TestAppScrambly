@@ -7,7 +7,7 @@ const SplashScreen: React.FC = () => {
   const navigation = useStackNavigation();
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigation.navigate(RouteName.HomeScreen);
+      // navigation.navigate(RouteName.HomeScreen);
     }, 3000);
 
     return () => clearTimeout(timer);
