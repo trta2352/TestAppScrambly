@@ -1,12 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, LayoutAnimation, TouchableOpacity } from 'react-native';
-import { BACKEND_BASE_URL } from 'react-native-dotenv';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  LayoutAnimation,
+  TouchableOpacity,
+  Platform,
+  UIManager,
+} from 'react-native';
 import { useDataContext } from '../../core/contexts/useDataContext';
 import { Colors } from '../../assets/styles/colors';
 
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 const HomeScreen: React.FC = () => {
   const { posts } = useDataContext();
-
   const [openPostId, setOpenPostId] = useState<number | null>(null);
 
   const togglePost = (id: number) => {
@@ -15,64 +29,83 @@ const HomeScreen: React.FC = () => {
   };
 
   return (
-    <FlatList
-      contentContainerStyle={styles.listContainer}
-      data={posts}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({ item }) => {
-        const isOpen = openPostId === item.id;
-        return (
-          <View style={styles.postContainer}>
-            <TouchableOpacity
-              onPress={() => togglePost(item.id)}
-              style={styles.header}>
-              <Text style={styles.title}>
-                #{item.id} - {item.title}
-              </Text>
-              <Text style={styles.arrow}>{isOpen ? '▲' : '▼'}</Text>
-            </TouchableOpacity>
-            {isOpen && <Text style={styles.body}>{item.body}</Text>}
-          </View>
-        );
-      }}
-    />
+    <View style={styles.container}>
+      <Text style={styles.screenTitle}>Latest Posts</Text>
+      <FlatList
+        contentContainerStyle={styles.listContainer}
+        data={posts}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({ item }) => {
+          const isOpen = openPostId === item.id;
+          return (
+            <View style={styles.postContainer}>
+              <TouchableOpacity
+                onPress={() => togglePost(item.id)}
+                style={styles.header}
+                activeOpacity={0.7}>
+                <Text style={styles.title}>
+                  #{item.id} - {item.title}
+                </Text>
+                <Text style={styles.arrow}>{isOpen ? '−' : '+'}</Text>
+              </TouchableOpacity>
+              {isOpen && <Text style={styles.body}>{item.body}</Text>}
+            </View>
+          );
+        }}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.background || '#FAFAFA',
+    paddingTop: 24,
+  },
+  screenTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    color: '#222',
   },
   listContainer: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   postContainer: {
-    marginBottom: 12,
+    marginBottom: 16,
     padding: 16,
-    borderRadius: 8,
-    backgroundColor: '#f0f0f0',
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   title: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '500',
+    color: '#333',
     flex: 1,
     marginRight: 10,
   },
   arrow: {
-    fontSize: 16,
-    alignSelf: 'center',
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#888',
   },
   body: {
     marginTop: 12,
     fontSize: 14,
-    color: '#333',
+    color: '#555',
     lineHeight: 20,
   },
 });
