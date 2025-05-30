@@ -4,7 +4,7 @@ import { INetworkService } from './INetworkService';
 
 export const axiosService = axios.create({ baseURL: BACKEND_BASE_URL });
 
-enum Endpoints {
+export enum Endpoints {
   POSTS = '/posts',
 }
 
@@ -20,11 +20,9 @@ export default class NetworkService implements INetworkService {
 
   async getPosts() {
     try {
-      console.log('calling getPosts');
       const response = await axiosService.get(Endpoints.POSTS);
 
       if (response.data) {
-        console.log('response.data', response.data);
         return response.data;
       } else {
         throw new Error('No data received');
