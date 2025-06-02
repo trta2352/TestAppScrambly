@@ -2,21 +2,21 @@
 
 ## Overview
 
-The **Scrambly test app** is a simple example how to fetch JSON data parse it and then display it to the user. The main design approach was to keep it as simple as possible since due to the complexity I felt there was no need to approach it in any other way. 
+The **Scrambly test app** is a simple example of how to fetch JSON data, parse it, and display it to the user. The main design goal was to keep the implementation as straightforward as possible — given the simplicity of the task, there was no need to overarchitect the solution.
 
 Main external packages: 
-- @react-navigation: navigation between screens
-- axios: replacement of the native fetch module,
-- lottie-react-native: simple animation library,
-- react-native-dotenv: enviromental variables. 
+- @react-navigation: for screen navigation
+- axios: a cleaner replacement for the native fetch API
+- lottie-react-native: for lightweight animations
+- react-native-dotenv: to manage environment variables
 
 ### Components and tech decisions
 
 #### Data management
-For the sake of simplicity and to not over architect a simple application it was decided to use a context together with AsyncStorage instead of Redux for state management. 
+To keep things simple and avoid overengineering, we use React Context in combination with AsyncStorage instead of Redux for state management. This approach is lightweight and appropriate for the app's scope.
 
 ### Network service and fetching of data
-The NetworkService file is a singleton where all network calls are located. The getPost function is called from useDataContext where the response is also managed. 
+The **NetworkService** file is a singleton that contains all network calls. The getPosts function is invoked from the useDataContext hook, which is also responsible for handling the response and managing local state.
 
 ## How to run the app
 
@@ -64,3 +64,28 @@ npm run ios
 # OR using Yarn
 yarn ios
 ```
+
+## Additional iOS Setup
+
+### Set Development Team in Xcode
+
+To run the app on a physical iOS device or simulator, you must set your development team in Xcode:
+
+1. Open the project in Xcode:
+
+   ```sh
+   open ios/TestAppScrambly.xcworkspace
+2. Navigate to Signing & Capabilities
+Change **development team** and **bundle identifier**.
+
+## Run tests
+
+```sh
+# Using npm
+npm run test
+
+# OR using Yarn
+yarn test
+```
+
+
