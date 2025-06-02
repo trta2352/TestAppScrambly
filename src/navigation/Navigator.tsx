@@ -5,6 +5,7 @@ import HomeScreen from '../presentation/screens/HomeScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RouteName } from './RouteName';
 import { RootStackParamList } from './NavigationTypes';
+import { navigationRef } from './rootNavigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList, 'RootStack'>();
 
@@ -22,7 +23,7 @@ function RootStack() {
 
 export default function Navigator() {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <RootStack />
     </NavigationContainer>
   );

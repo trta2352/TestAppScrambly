@@ -1,79 +1,77 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, LayoutAnimation, TouchableOpacity } from 'react-native';
-import { BACKEND_BASE_URL } from 'react-native-dotenv';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  UIManager,
+  SafeAreaView,
+} from 'react-native';
 import { useDataContext } from '../../core/contexts/useDataContext';
 import { Colors } from '../../assets/styles/colors';
+import PostList from '../components/lists/PostList';
+
+if (
+  Platform.OS === 'android' &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const HomeScreen: React.FC = () => {
-  const { posts } = useDataContext();
-
-  const [openPostId, setOpenPostId] = useState<number | null>(null);
-
-  const togglePost = (id: number) => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setOpenPostId(openPostId === id ? null : id);
-  };
+  const { setAppError, posts, isLoading, loadPosts } = useDataContext();
+  const [openPostID, setOpenPostID] = useState<number | null>(null);
 
   return (
-    <FlatList
-      contentContainerStyle={styles.listContainer}
-      data={posts}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({ item }) => {
-        const isOpen = openPostId === item.id;
-        return (
-          <View style={styles.postContainer}>
-            <TouchableOpacity
-              onPress={() => togglePost(item.id)}
-              style={styles.header}>
-              <Text style={styles.title}>
-                #{item.id} - {item.title}
-              </Text>
-              <Text style={styles.arrow}>{isOpen ? '▲' : '▼'}</Text>
-            </TouchableOpacity>
-            {isOpen && <Text style={styles.body}>{item.body}</Text>}
-          </View>
-        );
-      }}
-    />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: Colors.red,
+            borderRadius: 8,
+            paddingVertical: 10,
+            paddingHorizontal: 24,
+            alignSelf: 'flex-end',
+            marginRight: 16,
+            marginBottom: 8,
+          }}
+          onPress={() => {
+            setAppError('This is a test error for the overlay.');
+          }}>
+          <Text style={{ color: '#fff', fontWeight: '600', fontSize: 16 }}>
+            Test Error Overlay
+          </Text>
+        </TouchableOpacity>
+        <Text style={styles.screenTitle}>Latest Posts</Text>
+        <PostList
+          posts={posts}
+          isLoading={isLoading}
+          onRefresh={() => loadPosts(true)}
+          openPostId={openPostID}
+          setOpenPostId={setOpenPostID}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: Colors.background,
+    paddingTop: 24,
+  },
+  screenTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    paddingHorizontal: 16,
+    marginBottom: 8,
+    color: '#222',
   },
   listContainer: {
-    padding: 16,
-  },
-  postContainer: {
-    marginBottom: 12,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: '#f0f0f0',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    flex: 1,
-    marginRight: 10,
-  },
-  arrow: {
-    fontSize: 16,
-    alignSelf: 'center',
-  },
-  body: {
-    marginTop: 12,
-    fontSize: 14,
-    color: '#333',
-    lineHeight: 20,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
 });
 

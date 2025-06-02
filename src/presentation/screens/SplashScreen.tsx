@@ -21,6 +21,7 @@ const SplashScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <LottieView
+        testID="LottieView"
         source={LoadingAnimation}
         autoPlay
         loop

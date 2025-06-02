@@ -15,12 +15,18 @@ type DataContextType = {
   isLoading: boolean;
   posts: Post[];
   savePosts: (posts: Post[]) => void;
+  appError: string | null;
+  setAppError: (error: string) => void;
+  loadPosts: (override: boolean) => void;
 };
 
 const DataContext = createContext<DataContextType>({
   isLoading: false,
   posts: [],
   savePosts: () => {},
+  appError: null,
+  setAppError: () => {},
+  loadPosts: () => {},
 });
 
 export const useDataContext = (): DataContextType => useContext(DataContext);
@@ -28,6 +34,7 @@ export const useDataContext = (): DataContextType => useContext(DataContext);
 const DataProvider = ({ children }: { children: ReactNode }): ReactElement => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [appError, setAppError] = useState<string | null>(null);
 
   const savePosts = async (newPosts: Post[]) => {
     try {
@@ -37,25 +44,30 @@ const DataProvider = ({ children }: { children: ReactNode }): ReactElement => {
     }
   };
 
-  const loadPosts = async () => {
+  const loadPosts = async (override: boolean) => {
     try {
       setIsLoading(true);
       const postsString = await AsyncStorage.getItem(DB_POSTS);
-      if (postsString) {
-        setPosts(JSON.parse(postsString));
-      } else {
+
+      if (override || !postsString) {
         const posts = await NetworkService.shared.getPosts();
         setPosts(posts);
         savePosts(posts);
+      } else {
+        setPosts(JSON.parse(postsString));
       }
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to load posts:', error);
+      setIsLoading(false);
+      if (override) {
+        setAppError('Failed to load posts');
+      }
     }
   };
 
   useEffect(() => {
-    loadPosts();
+    loadPosts(false);
   }, []);
 
   return (
@@ -64,6 +76,9 @@ const DataProvider = ({ children }: { children: ReactNode }): ReactElement => {
         posts,
         savePosts: savePosts,
         isLoading,
+        appError,
+        setAppError,
+        loadPosts,
       }}>
       {children}
     </DataContext.Provider>
